@@ -5824,5 +5824,311 @@ img,svg{max-width:100%}
 })();
 </script>
 
+
+
+<!-- KCN webapp v14: image-faithful mobile plot presentation -->
+<style id="kcn-mobile-image-faithful-v14">
+@media (max-width:780px){
+  /* Keep every analytical visual as one complete composition. No plot is split,
+     stretched or forced into a horizontal swipe strip. */
+  .kcn-visual-col .kcn-fig{
+    overflow:visible!important;
+    padding:7px!important;
+    background:#fff!important;
+  }
+  .kcn-visual-col,
+  #kcn-sec3 .kcn-visual-col,
+  #kcn-sec6 .kcn-visual-col,
+  #kcn-sec8 .kcn-visual-col{
+    overflow:visible!important;
+  }
+
+  .kcn-mobile-fit-stage{
+    position:relative;
+    width:100%;
+    max-width:100%;
+    min-height:120px;
+    overflow:hidden;
+    border:1px solid #dfe9e5;
+    border-radius:12px;
+    background:#fff;
+    box-shadow:0 3px 12px rgba(15,76,58,.055);
+    touch-action:pan-y;
+  }
+  .kcn-mobile-fit-stage>.kcn-mobile-fit-content{
+    position:absolute;
+    left:0;
+    top:0;
+    max-width:none!important;
+    transform-origin:0 0;
+    will-change:transform;
+  }
+  .kcn-mobile-fit-stage .kcn-mobile-expand{
+    position:absolute;
+    z-index:80;
+    top:7px;
+    right:7px;
+    width:32px;
+    height:32px;
+    display:grid;
+    place-items:center;
+    padding:0;
+    border:1px solid rgba(15,76,58,.20);
+    border-radius:999px;
+    background:rgba(255,255,255,.94);
+    color:#0f4c3a;
+    font:700 16px/1 Arial,sans-serif;
+    box-shadow:0 2px 8px rgba(15,76,58,.10);
+    cursor:pointer;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .kcn-mobile-fit-stage .kcn-mobile-expand:active{transform:scale(.95)}
+  .kcn-mobile-fit-stage.is-expanded{
+    position:fixed!important;
+    inset:0!important;
+    z-index:99999!important;
+    width:100vw!important;
+    height:100dvh!important;
+    max-width:none!important;
+    border:0!important;
+    border-radius:0!important;
+    overflow:auto!important;
+    background:#f4f8f6!important;
+    padding:54px 12px 18px!important;
+    overscroll-behavior:contain;
+    touch-action:pan-x pan-y pinch-zoom;
+  }
+  .kcn-mobile-fit-stage.is-expanded>.kcn-mobile-fit-content{
+    position:relative!important;
+    left:auto!important;
+    top:auto!important;
+    transform:none!important;
+    margin:0 auto!important;
+    background:#fff;
+    border-radius:12px;
+  }
+  .kcn-mobile-fit-stage.is-expanded .kcn-mobile-expand{
+    position:fixed!important;
+    top:10px!important;
+    right:12px!important;
+    width:38px!important;
+    height:38px!important;
+    font-size:20px!important;
+  }
+  body.kcn-mobile-plot-open{overflow:hidden!important}
+
+  /* Undo v13 plot splitting and swipe widths. The JavaScript below renders each
+     visual at its original design width and scales the complete composition. */
+  #chart-container-dual .kcn-gd-charts{
+    display:grid!important;
+    grid-template-columns:1fr 1fr!important;
+    gap:18px!important;
+  }
+  #chart-container-dual .kcn-gd-chart{min-width:0!important}
+  #kcn-gd-legend{
+    display:flex!important;
+    flex-wrap:wrap!important;
+    justify-content:center!important;
+    gap:8px 14px!important;
+    margin-top:8px!important;
+    padding-top:10px!important;
+  }
+  #kcn-gd-legend .kcn-gd-li{font-size:11px!important}
+
+  #kcn-sec2 #kcn-c-polar-wrap,
+  #kcn-sec2 #kcn-c-polar,
+  #kcn-sec6 .kcn-ch5v3-charts,
+  #kcn-sec6 .kcn-ch5v3-combined,
+  #kcn-sec8 .kcn-framework-visual,
+  #kcn-sec8 .kcn-times-major{
+    max-width:none!important;
+    margin:0!important;
+  }
+
+  #kcn-sec2 #kcn-c-polar-wrap{width:760px!important;height:676px!important;min-height:676px!important}
+  #kcn-sec2 #kcn-c-polar{width:760px!important;height:676px!important;min-height:676px!important}
+  #kcn-sec6 .kcn-ch5v3-charts{width:860px!important;height:560px!important;min-height:560px!important}
+  #kcn-sec6 .kcn-ch5v3-combined{width:860px!important;height:560px!important;min-height:560px!important}
+
+  .kcn-sankey-compare-grid{
+    display:grid!important;
+    grid-template-columns:minmax(64px,.25fr) repeat(3,minmax(0,1fr))!important;
+    column-gap:10px!important;
+    row-gap:5px!important;
+    align-items:start!important;
+  }
+  .kcn-sankey-grid-label,.kcn-sankey-grid-val,.kcn-sankey-grid-arrow,.kcn-sankey-divider-line{display:flex!important}
+  .kcn-sankey-divider-line{display:block!important}
+  .kcn-sankey-mobile-header{display:none!important}
+  .kcn-sankey-col{display:flex!important;width:auto!important;margin:0!important}
+  .kcn-sankey-box{height:330px!important;min-height:330px!important}
+  .kcn-sankey-foot{display:block!important}
+
+  /* The intervention descriptions remain readable in portrait; only the lower
+     analytical figure is scaled as one image-like composition. */
+  #kcn-sec6 .kcn-ch5v3-text-grid.kcn-period-board{
+    width:100%!important;
+    min-width:0!important;
+    transform:none!important;
+  }
+
+  /* Side legend remains below the full plot on portrait and is not scaled. */
+  .kcn-sec6-side-legend{
+    margin-top:16px!important;
+    row-gap:14.4px!important;
+  }
+}
+
+@media (max-width:430px){
+  .kcn-mobile-fit-stage .kcn-mobile-expand{width:30px;height:30px;font-size:15px}
+}
+</style>
+
+<script id="kcn-mobile-image-faithful-behaviour-v14">
+(function(){
+  'use strict';
+  var mq=window.matchMedia('(max-width:780px)');
+  var configs=[
+    {selector:'#chart-container-dual', width:920},
+    {selector:'#kcn-c-polar-wrap', width:760, height:676},
+    {selector:'#kcn-sankey-comparison', width:980},
+    {selector:'#chart-container-genmix', width:860, height:500},
+    {selector:'#kcn-c-sensitivity', width:860, height:500},
+    {selector:'#kcn-sec6 .kcn-ch5v3-charts', width:860, height:560},
+    {selector:'#kcn-sec8 .kcn-times-major', width:960}
+  ];
+  var records=[];
+  var resizeTimer=0;
+
+  function chartInstancesWithin(el){
+    var nodes=[el].concat(Array.prototype.slice.call(el.querySelectorAll('*')));
+    var result=[];
+    if(typeof echarts==='undefined') return result;
+    nodes.forEach(function(node){
+      try{
+        var c=echarts.getInstanceByDom(node);
+        if(c&&result.indexOf(c)<0) result.push(c);
+      }catch(e){}
+    });
+    return result;
+  }
+
+  function createStage(cfg){
+    var el=document.querySelector(cfg.selector);
+    if(!el||el.dataset.kcnFitV14==='1') return;
+    el.dataset.kcnFitV14='1';
+    var stage=document.createElement('div');
+    stage.className='kcn-mobile-fit-stage';
+    stage.dataset.logicalWidth=String(cfg.width);
+    if(cfg.height) stage.dataset.logicalHeight=String(cfg.height);
+    el.parentNode.insertBefore(stage,el);
+    stage.appendChild(el);
+    el.classList.add('kcn-mobile-fit-content');
+
+    var btn=document.createElement('button');
+    btn.type='button';
+    btn.className='kcn-mobile-expand';
+    btn.setAttribute('aria-label','Open full-size plot');
+    btn.setAttribute('title','Open full-size plot');
+    btn.textContent='↗';
+    stage.appendChild(btn);
+
+    var rec={cfg:cfg,el:el,stage:stage,btn:btn,expanded:false};
+    records.push(rec);
+    btn.addEventListener('click',function(ev){
+      ev.preventDefault();
+      ev.stopPropagation();
+      rec.expanded=!rec.expanded;
+      stage.classList.toggle('is-expanded',rec.expanded);
+      document.body.classList.toggle('kcn-mobile-plot-open',rec.expanded);
+      btn.textContent=rec.expanded?'×':'↗';
+      btn.setAttribute('aria-label',rec.expanded?'Close full-size plot':'Open full-size plot');
+      if(rec.expanded){
+        el.style.transform='none';
+        el.style.width=cfg.width+'px';
+        if(cfg.height) el.style.height=cfg.height+'px';
+        window.setTimeout(function(){resizeCharts(rec);},60);
+      }else{
+        fitRecord(rec);
+      }
+    });
+  }
+
+  function resizeCharts(rec){
+    chartInstancesWithin(rec.el).forEach(function(chart){try{chart.resize();}catch(e){}});
+    [rec.el].concat(Array.prototype.slice.call(rec.el.querySelectorAll('[data-chart]'))).forEach(function(node){
+      var inst=node&&node.__kcnChartInstance;
+      if(inst&&typeof inst.resize==='function'){try{inst.resize();}catch(e){}}
+    });
+  }
+
+  function fitRecord(rec){
+    var cfg=rec.cfg, el=rec.el, stage=rec.stage;
+    if(!mq.matches){
+      stage.classList.remove('is-expanded');
+      rec.expanded=false;
+      rec.btn.textContent='↗';
+      rec.btn.style.display='none';
+      el.style.position='';
+      el.style.width='';
+      el.style.height='';
+      el.style.transform='';
+      stage.style.height='';
+      stage.style.minHeight='';
+      stage.style.border='0';
+      stage.style.overflow='visible';
+      document.body.classList.remove('kcn-mobile-plot-open');
+      resizeCharts(rec);
+      return;
+    }
+    rec.btn.style.display='grid';
+    stage.style.border='';
+    stage.style.overflow='hidden';
+    if(rec.expanded) return;
+
+    el.style.width=cfg.width+'px';
+    if(cfg.height) el.style.height=cfg.height+'px';
+    el.style.maxWidth='none';
+    el.style.position='absolute';
+    resizeCharts(rec);
+
+    /* Let chart/SVG layout settle at its original design size before scaling. */
+    window.requestAnimationFrame(function(){
+      var available=Math.max(1,stage.clientWidth);
+      var naturalHeight=cfg.height||Math.max(el.scrollHeight,el.getBoundingClientRect().height,160);
+      var scale=Math.min(1,available/cfg.width);
+      el.style.transform='scale('+scale+')';
+      stage.style.height=Math.ceil(naturalHeight*scale)+'px';
+      stage.style.minHeight=Math.ceil(naturalHeight*scale)+'px';
+    });
+  }
+
+  function fitAll(){
+    records.forEach(fitRecord);
+  }
+
+  function initialise(){
+    configs.forEach(createStage);
+    fitAll();
+    window.setTimeout(fitAll,120);
+    window.setTimeout(fitAll,450);
+    window.setTimeout(fitAll,1100);
+  }
+
+  function scheduleFit(){
+    window.clearTimeout(resizeTimer);
+    resizeTimer=window.setTimeout(fitAll,120);
+  }
+
+  if(typeof mq.addEventListener==='function') mq.addEventListener('change',scheduleFit);
+  else if(typeof mq.addListener==='function') mq.addListener(scheduleFit);
+  window.addEventListener('resize',scheduleFit,{passive:true});
+  window.addEventListener('orientationchange',function(){window.setTimeout(fitAll,220);},{passive:true});
+  window.addEventListener('load',function(){window.setTimeout(initialise,180);},{once:true});
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initialise,{once:true});
+  else initialise();
+})();
+</script>
+
 </body>
 </html>
