@@ -5991,10 +5991,10 @@ img,svg{max-width:100%}
   var configs=[
     {selector:'#chart-container-dual', width:920},
     {selector:'#kcn-c-polar-wrap', width:760, height:676},
-    {selector:'#kcn-sankey-comparison', width:980},
+    {selector:'#kcn-sankey-comparison', width:940},
     {selector:'#chart-container-genmix', width:860, height:500},
     {selector:'#kcn-c-sensitivity', width:860, height:500},
-    {selector:'#kcn-sec6 .kcn-ch5v3-charts', width:860, height:560},
+    {selector:'#chart-container-ch5v3', width:1080},
     {selector:'#kcn-sec8 .kcn-times-major', width:960}
   ];
   var records=[];
@@ -6127,6 +6127,115 @@ img,svg{max-width:100%}
   window.addEventListener('load',function(){window.setTimeout(initialise,180);},{once:true});
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',initialise,{once:true});
   else initialise();
+})();
+</script>
+
+
+
+<!-- KCN webapp v15: mobile composition tuning for Sankey and land-blue-carbon section -->
+<style id="kcn-mobile-composition-tuning-v15">
+@media (max-width:780px){
+  /* Sankey should read as a large complete comparison panel, similar in visual presence
+     to the solar-led capacity figure. */
+  #kcn-sankey-comparison{width:940px!important;max-width:none!important;margin:0!important;}
+  #kcn-sankey-comparison.kcn-mobile-fit-content{position:absolute!important;}
+  .kcn-sankey-compare-grid{
+    grid-template-columns:minmax(74px,.28fr) repeat(3,minmax(0,1fr))!important;
+    column-gap:12px!important;
+    row-gap:8px!important;
+    align-items:start!important;
+  }
+  .kcn-sankey-box{height:455px!important;min-height:455px!important;padding-top:10px!important;}
+  .kcn-sankey-grid-label,.kcn-sankey-grid-val{font-size:11px!important;line-height:1.25!important;}
+  .kcn-sankey-grid-arrow{transform:scale(1.08)!important;transform-origin:center!important;}
+  .kcn-sankey-badge-new{font-size:1.05rem!important;padding:.26em .66em!important;}
+  .kcn-sankey-col h3{font-size:14.5px!important;line-height:1.25!important;}
+
+  /* Recreate the desktop composition for the land-based section on mobile by scaling the
+     entire original layout as one unified landscape visual. */
+  #chart-container-ch5v3{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 230px!important;
+    grid-template-areas:
+      'board board'
+      'chart legend'!important;
+    gap:14px 16px!important;
+    width:1080px!important;
+    max-width:none!important;
+    align-items:start!important;
+  }
+  #chart-container-ch5v3>.kcn-ch5v3-text-grid,
+  #chart-container-ch5v3>.kcn-period-board{
+    grid-area:board!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:10px!important;
+    width:100%!important;
+    margin:0 0 2px!important;
+  }
+  #chart-container-ch5v3>.kcn-ch5v3-charts{grid-area:chart!important;width:100%!important;}
+  #chart-container-ch5v3>.kcn-ch5v3-charts .kcn-ch5v3-combined{width:100%!important;height:475px!important;min-height:475px!important;}
+  #chart-container-ch5v3>.kcn-sec6-side-legend,
+  #chart-container-ch5v3>#kcn-ch5v3-legend{
+    grid-area:legend!important;
+    width:100%!important;
+    margin:0!important;
+    padding:2px 0 0!important;
+    border-top:0!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:17px!important;
+    align-content:start!important;
+    align-self:start!important;
+  }
+  #chart-container-ch5v3>.kcn-sec6-side-legend .kcn-legend-item,
+  #chart-container-ch5v3>.kcn-sec6-side-legend .kcn-legend-item.is-long{
+    grid-column:auto!important;
+    gap:10px!important;
+    font-size:12.4px!important;
+    line-height:1.34!important;
+    min-width:0!important;
+  }
+  #chart-container-ch5v3>.kcn-sec6-side-legend .kcn-legend-swatch{width:16px!important;height:16px!important;min-width:16px!important;}
+  #chart-container-ch5v3>.kcn-sec6-side-legend .kcn-legend-line{width:30px!important;min-width:30px!important;border-top-width:2.5px!important;}
+
+  /* Each period panel keeps the desktop three-column reading pattern. */
+  #chart-container-ch5v3 .kcn-period-column{padding:11px 10px!important;border-radius:11px!important;}
+  #chart-container-ch5v3 .kcn-period-head strong{font-size:15px!important;}
+  #chart-container-ch5v3 .kcn-period-item{font-size:11.4px!important;line-height:1.43!important;padding:8px 9px 8px 10px!important;}
+}
+</style>
+
+<script id="kcn-mobile-composition-tuning-behaviour-v15">
+(function(){
+  'use strict';
+  var mq=window.matchMedia('(max-width:780px)');
+
+  function placeSequestrationLegendForMobile(){
+    var legend=document.querySelector('.kcn-sec6-side-legend');
+    var container=document.getElementById('chart-container-ch5v3');
+    var copy=document.querySelector('#kcn-sec6 .kcn-copy-col');
+    if(!legend||!container) return;
+    if(mq.matches){
+      if(legend.parentElement!==container) container.appendChild(legend);
+    }else if(copy && legend.parentElement!==copy){
+      copy.appendChild(legend);
+    }
+  }
+
+  function retrigger(){
+    placeSequestrationLegendForMobile();
+    window.setTimeout(placeSequestrationLegendForMobile,120);
+    window.setTimeout(placeSequestrationLegendForMobile,480);
+  }
+
+  if(typeof mq.addEventListener==='function') mq.addEventListener('change',retrigger);
+  else if(typeof mq.addListener==='function') mq.addListener(retrigger);
+  window.addEventListener('resize',function(){window.setTimeout(retrigger,120);},{passive:true});
+  window.addEventListener('orientationchange',function(){window.setTimeout(retrigger,180);},{passive:true});
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',retrigger,{once:true});
+  else retrigger();
+  window.addEventListener('load',function(){window.setTimeout(retrigger,250);},{once:true});
 })();
 </script>
 
