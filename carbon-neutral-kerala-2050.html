@@ -5534,13 +5534,44 @@ body { background:var(--kcn-page-bg)!important; }
 
     function chooseVoice(){
       var voices=synth.getVoices()||[];
-      var indian=voices.filter(function(v){return /^en[-_]IN$/i.test(v.lang||'');});
-      var maleHints=[/Prabhat/i,/Ravi/i,/Rishi/i,/Hemant/i,/Madhur/i,/Male/i];
-      chosenVoice=null;
-      for(var i=0;i<maleHints.length&&!chosenVoice;i++){
-        chosenVoice=indian.find(function(v){return maleHints[i].test(v.name||'');})||null;
+      if(!voices.length){chosenVoice=null;return;}
+
+      var saved='';
+      try{saved=window.localStorage.getItem('kcnPreferredNarrationVoice')||'';}catch(e){}
+      if(saved){
+        chosenVoice=voices.find(function(v){return (v.voiceURI||v.name||'')===saved;})||null;
+        if(chosenVoice) return;
       }
-      chosenVoice=chosenVoice||indian[0]||voices.find(function(v){return /^en[-_](GB|AU|US)$/i.test(v.lang||'');})||voices[0]||null;
+
+      var maleHints=[
+        /Microsoft Ravi/i,/Ravi/i,/Rishi/i,/Prabhat/i,/Hemant/i,
+        /Madhur/i,/Arjun/i,/Raj/i,/Male/i,/Daniel/i,/David/i,
+        /George/i,/James/i,/Mark/i,/Thomas/i,/Alex/i
+      ];
+      var femaleHints=[
+        /Heera/i,/Neerja/i,/Swara/i,/Veena/i,/Aditi/i,/Raveena/i,/Priya/i,
+        /Female/i,/Samantha/i,/Victoria/i,/Zira/i,/Hazel/i,/Susan/i,/Karen/i,
+        /Tessa/i,/Ava/i,/Emma/i,/Moira/i,/Fiona/i
+      ];
+
+      function matches(list,name){return list.some(function(rx){return rx.test(name||'');});}
+      function score(v){
+        var name=v.name||''; var lang=v.lang||''; var s=0;
+        if(/^en[-_]IN$/i.test(lang)) s+=1000;
+        else if(/^en[-_](GB|AU|US|CA|ZA|NZ)$/i.test(lang)) s+=250;
+        else if(/^en/i.test(lang)) s+=120;
+        if(matches(maleHints,name)) s+=700;
+        if(matches(femaleHints,name)) s-=1200;
+        if(/Microsoft Ravi/i.test(name)) s+=500;
+        if(v.localService) s+=25;
+        if(v.default) s+=10;
+        return s;
+      }
+
+      chosenVoice=voices.slice().sort(function(a,b){return score(b)-score(a);})[0]||null;
+      if(chosenVoice){
+        try{window.localStorage.setItem('kcnPreferredNarrationVoice',chosenVoice.voiceURI||chosenVoice.name||'');}catch(e){}
+      }
     }
 
     function updateButton(){
@@ -5562,7 +5593,7 @@ body { background:var(--kcn-page-bg)!important; }
         active=false; paused=false; chunkIndex=0; updateButton(); return;
       }
       var utter=new SpeechSynthesisUtterance(chunks[chunkIndex]);
-      utter.lang='en-IN'; utter.rate=0.93; utter.pitch=0.92; utter.volume=1;
+      utter.lang=(chosenVoice&&chosenVoice.lang)?chosenVoice.lang:'en-IN'; utter.rate=0.93; utter.pitch=0.92; utter.volume=1;
       if(chosenVoice) utter.voice=chosenVoice;
       utter.onend=function(){
         if(token!==runToken||!active) return;
@@ -5995,7 +6026,7 @@ img,svg{max-width:100%}
     {selector:'#chart-container-genmix', width:860, height:500},
     {selector:'#kcn-c-sensitivity', width:860, height:500},
     {selector:'#chart-container-ch5v3', width:1080},
-    {selector:'#kcn-sec8 .kcn-times-major', width:960}
+    {selector:'#kcn-sec8 .kcn-times-major', width:1120, height:630}
   ];
   var records=[];
   var resizeTimer=0;
@@ -6236,6 +6267,117 @@ img,svg{max-width:100%}
   if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',retrigger,{once:true});
   else retrigger();
   window.addEventListener('load',function(){window.setTimeout(retrigger,250);},{once:true});
+})();
+</script>
+
+
+
+<!-- KCN webapp v16: mobile voice consistency, sequestration composition and TIMES sizing -->
+<style id="kcn-mobile-final-tuning-v16">
+@media (max-width:780px){
+  /* Use almost the complete portrait viewport width for the two dense landscape visuals. */
+  #kcn-sec6 .kcn-mobile-fit-stage,
+  #kcn-sec8 .kcn-mobile-fit-stage{
+    width:calc(100vw - 10px)!important;
+    max-width:calc(100vw - 10px)!important;
+    margin-left:calc((100% - (100vw - 10px))/2)!important;
+    margin-right:0!important;
+  }
+  #kcn-sec6 .kcn-visual-col,
+  #kcn-sec8 .kcn-visual-col{padding-left:2px!important;padding-right:2px!important;}
+  #kcn-sec6 .kcn-visual-col .kcn-fig,
+  #kcn-sec8 .kcn-visual-col .kcn-fig{padding:3px!important;border-left:0!important;border-right:0!important;border-radius:10px!important;}
+
+  /* Mobile order: complete transitioned line/area figure with legend first, followed by
+     the three period-specific intervention columns. The entire composition remains one
+     image-faithful landscape canvas and retains its original animation behaviour. */
+  #chart-container-ch5v3{
+    display:grid!important;
+    grid-template-columns:minmax(0,1fr) 228px!important;
+    grid-template-areas:
+      'chart legend'
+      'board board'!important;
+    gap:15px 18px!important;
+    width:1080px!important;
+    max-width:none!important;
+    align-items:start!important;
+    background:#fff!important;
+  }
+  #chart-container-ch5v3>.kcn-ch5v3-charts{grid-area:chart!important;width:100%!important;min-width:0!important;}
+  #chart-container-ch5v3>.kcn-ch5v3-charts .kcn-ch5v3-combined{
+    width:100%!important;height:490px!important;min-height:490px!important;
+  }
+  #chart-container-ch5v3>.kcn-sec6-side-legend,
+  #chart-container-ch5v3>#kcn-ch5v3-legend{
+    grid-area:legend!important;
+    width:100%!important;
+    margin:5px 0 0!important;
+    padding:0!important;
+    border:0!important;
+    display:grid!important;
+    grid-template-columns:1fr!important;
+    gap:17px!important;
+    align-content:start!important;
+  }
+  #chart-container-ch5v3>.kcn-ch5v3-text-grid,
+  #chart-container-ch5v3>.kcn-period-board{
+    grid-area:board!important;
+    display:grid!important;
+    grid-template-columns:repeat(3,minmax(0,1fr))!important;
+    gap:11px!important;
+    width:100%!important;
+    margin:0!important;
+    transform:none!important;
+  }
+  #chart-container-ch5v3 .kcn-period-column{padding:12px 11px!important;border-radius:11px!important;}
+  #chart-container-ch5v3 .kcn-period-head strong{font-size:15px!important;}
+  #chart-container-ch5v3 .kcn-period-item{font-size:11.5px!important;line-height:1.44!important;padding:8px 9px 8px 10px!important;}
+
+  /* TIMES–PyPSA: larger, correctly proportioned landscape canvas on portrait screens. */
+  #kcn-sec8 .kcn-times-major{
+    width:1120px!important;
+    min-width:1120px!important;
+    height:630px!important;
+    min-height:630px!important;
+    aspect-ratio:auto!important;
+    background:#fff!important;
+  }
+  #kcn-sec8 .kcn-times-major img,
+  #kcn-sec8 .kcn-times-major canvas,
+  #kcn-sec8 .kcn-times-major svg{width:100%!important;height:100%!important;object-fit:contain!important;}
+}
+</style>
+
+<script id="kcn-mobile-final-tuning-behaviour-v16">
+(function(){
+  'use strict';
+  var mq=window.matchMedia('(max-width:780px)');
+
+  function positionLegend(){
+    var legend=document.querySelector('.kcn-sec6-side-legend');
+    var composition=document.getElementById('chart-container-ch5v3');
+    var copy=document.querySelector('#kcn-sec6 .kcn-copy-col');
+    if(!legend||!composition) return;
+    if(mq.matches){
+      if(legend.parentElement!==composition) composition.appendChild(legend);
+    }else if(copy&&legend.parentElement!==copy){
+      copy.appendChild(legend);
+    }
+  }
+
+  function refresh(){
+    positionLegend();
+    window.setTimeout(positionLegend,100);
+    window.setTimeout(positionLegend,420);
+  }
+
+  if(typeof mq.addEventListener==='function') mq.addEventListener('change',refresh);
+  else if(typeof mq.addListener==='function') mq.addListener(refresh);
+  window.addEventListener('resize',function(){window.setTimeout(refresh,100);},{passive:true});
+  window.addEventListener('orientationchange',function(){window.setTimeout(refresh,180);},{passive:true});
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',refresh,{once:true});
+  else refresh();
+  window.addEventListener('load',function(){window.setTimeout(refresh,240);},{once:true});
 })();
 </script>
 
