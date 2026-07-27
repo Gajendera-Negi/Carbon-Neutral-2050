@@ -2528,6 +2528,7 @@ body, .kcn-report, .kcn-section, .kcn-section.kcn-alt, .kcn-cluster { background
 </style>
 
 <style id="kcn-v22-carbon-sink-visible">
+/* V24: keep both BAU and CN50 grid-emission-factor curves visible and animate their downward trajectories after the stacked bars open. */
 /* V22: keep the replacement carbon-sink plot visible even before animation starts. */
 .kcn-carbon-sink-image{
   min-height:1px!important;
@@ -3767,46 +3768,15 @@ body, .kcn-report, .kcn-section, .kcn-section.kcn-alt, .kcn-cluster { background
         makeSeries('Wind',windPct,sourceColors.Wind,3),
         makeSeries('Nuclear',nuclearPct,sourceColors.Nuclear,4),
         makeSeries('Market',marketPct,sourceColors.Market,5),
-        {id:'grid-bau-line',name:'Grid Emission factor',type:'line',yAxisIndex:1,data:[null,null,null,null,null,null,null],connectNulls:false,symbol:'circle',symbolSize:6,z:22,smooth:0.25,animation:true,animationDuration:0,animationDurationUpdate:prefersReducedMotion?0:150,animationEasingUpdate:'linear',itemStyle:{color:'#2C3E50',borderColor:'#fff',borderWidth:1.6,opacity:0},lineStyle:{color:'#2C3E50',width:2.3,opacity:0},label:{show:false}},
-        {id:'grid-cn50-line',name:'Grid Emission factor',type:'line',yAxisIndex:1,data:[null,null,null,null,null,null,null],connectNulls:false,symbol:'circle',symbolSize:6,z:22,smooth:0.25,animation:true,animationDuration:0,animationDurationUpdate:prefersReducedMotion?0:150,animationEasingUpdate:'linear',itemStyle:{color:'#2C3E50',borderColor:'#fff',borderWidth:1.6,opacity:0},lineStyle:{color:'#2C3E50',width:2.3,opacity:0},label:{show:false},legendHoverLink:false}
+        {id:'grid-bau-line',name:'Grid Emission factor',type:'line',yAxisIndex:1,data:[gridEmissionFactor[0],gridEmissionFactor[1],gridEmissionFactor[2],gridEmissionFactor[3],null,null,null],connectNulls:false,symbol:'circle',symbolSize:7,z:30,smooth:0.32,animation:!prefersReducedMotion,animationDuration:prefersReducedMotion?0:1450,animationDelay:prefersReducedMotion?0:1450,animationEasing:'cubicOut',itemStyle:{color:'#2C3E50',borderColor:'#fff',borderWidth:1.8,opacity:1},lineStyle:{color:'#2C3E50',width:2.6,opacity:1},label:{show:false}},
+        {id:'grid-cn50-line',name:'Grid Emission factor',type:'line',yAxisIndex:1,data:[null,null,null,null,gridEmissionFactor[4],gridEmissionFactor[5],gridEmissionFactor[6]],connectNulls:false,symbol:'circle',symbolSize:7,z:30,smooth:0.32,animation:!prefersReducedMotion,animationDuration:prefersReducedMotion?0:1450,animationDelay:prefersReducedMotion?0:2450,animationEasing:'cubicOut',itemStyle:{color:'#2C3E50',borderColor:'#fff',borderWidth:1.8,opacity:1},lineStyle:{color:'#2C3E50',width:2.6,opacity:1},label:{show:false},legendHoverLink:false}
       ]
     };
 
-    var gridLineTimers=[];
-    function clearGridLineTimers(){gridLineTimers.forEach(function(t){clearTimeout(t);});gridLineTimers=[];}
-    function setGridSeries(id,values,visible){
-      if(chart.isDisposed())return;
-      chart.setOption({series:[{id:id,data:values,itemStyle:{color:'#2C3E50',borderColor:'#fff',borderWidth:1.6,opacity:visible?1:0},lineStyle:{color:'#2C3E50',width:2.3,opacity:visible?1:0}}]});
-    }
-    function progressiveGridLine(id,pointIndexes,startDelay,pointDelay){
-      gridLineTimers.push(setTimeout(function(){
-        var values=[null,null,null,null,null,null,null];
-        var cursor=0;
-        function addPoint(){
-          var idx=pointIndexes[cursor];
-          values[idx]=gridEmissionFactor[idx];
-          setGridSeries(id,values.slice(),true);
-          cursor++;
-          if(cursor<pointIndexes.length){gridLineTimers.push(setTimeout(addPoint,pointDelay));}
-        }
-        addPoint();
-      },startDelay));
-    }
-    function revealGridEmissionFactor(){
-      clearGridLineTimers();
-      if(prefersReducedMotion){
-        setGridSeries('grid-bau-line',[gridEmissionFactor[0],gridEmissionFactor[1],gridEmissionFactor[2],gridEmissionFactor[3],null,null,null],true);
-        setGridSeries('grid-cn50-line',[null,null,null,null,gridEmissionFactor[4],gridEmissionFactor[5],gridEmissionFactor[6]],true);
-        return;
-      }
-      progressiveGridLine('grid-bau-line',[0,1,2,3],1420,125);
-      progressiveGridLine('grid-cn50-line',[4,5,6],2620,135);
-    }
+    function clearGridLineTimers(){}
     function startGenerationSequence(){
-      clearGridLineTimers();
       chart.clear();
       chart.setOption(option,true);
-      revealGridEmissionFactor();
     }
 
     function addDecorations(){
